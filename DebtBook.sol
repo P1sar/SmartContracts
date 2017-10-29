@@ -14,16 +14,17 @@ contract DebtBook {
 
     event Error(string msg);
 
+    modifier validateAmount(uint amount) {
+        require(amount > 0);
+        _;
+    }
+
     function DebtBook() {
         moneylender = msg.sender;
     }
 
-    function addDebt(uint amount) public returns (bool) {
-        if(amount < 0) {
-          Error('Amount must be grater then zero');
-          return false;
-        }
-        uint hardLimit = 2^256 - 1;
+    function addDebt(uint amount) public validateAmount(amount) returns (bool) {
+        uint hardLimit = 2**256 - 1;
         if(hardLimit - amount < debtors[msg.sender]) {
             Error('Relax! Not so much!');
             return false;
@@ -35,12 +36,8 @@ contract DebtBook {
         return true;
     }
 
-   function decrDebt(uint amount, address debtor) public returns (bool) {
+   function decrDebt(uint amount, address debtor) public validateAmount(amount) returns (bool) {
         if(msg.sender != moneylender) return false;
-        if(amount < 0) {
-          Error('Amount must be grater then zero');
-          return false;
-        }
         if(amount > debtors[debtor]) {
             Error('You cant decrease debt more than it actually is');
             return false;
