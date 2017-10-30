@@ -15,7 +15,10 @@ contract DebtBook {
     event Error(string msg);
 
     modifier validateAmount(uint amount) {
-        require(amount > 0);
+        if(amount <= 0){
+            Error('Amount must be greater than 0');
+            return;
+        }
         _;
     }
 
